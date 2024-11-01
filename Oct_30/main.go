@@ -1,7 +1,7 @@
 package main
 
 import (
-	"learn_go/test"
+	"Oct_30/test"
 )
 
 func main() {
