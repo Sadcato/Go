@@ -35,7 +35,7 @@ func ArticlesCreateHandler(w http.ResponseWriter, r *http.Request) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>创建文章 —— 我的技术博客</title>
+    <title>创建文章 — 我的技术博客</title>
 </head>
 <body>
     <form action="%s?test=data" method="post">
