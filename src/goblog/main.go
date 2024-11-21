@@ -13,7 +13,7 @@ func handlerFunc(w http.ResponseWriter, r *http.Request) {
 			"</h2>href=\"mailto:summer@example.com\">summer@example.com</h2>")
 	} else {
 		fmt.Fprint(w, "<h1>请求页面未找到 :(</h1>"+
-			"<p>如有疑惑，请联系我们。</p>")
+			"<p>如有疑惑，请联系我。</p>")
 	}
 }
 
