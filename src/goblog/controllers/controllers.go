@@ -62,28 +62,6 @@ func ArticlesStoreHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "body 的长度为: %v <br>", utf8.RuneCountInString(body))
 	} else {
 
-		html := `
-	<!DOCTYPE html>
-	<html lang="en">
-	<head>
-		<title>创建文章 —— 我的技术博客</title>
-		<style type="text/css">.error {color: red;}</style>
-	</head>
-	<body>
-		<form action="{{ .URL }}" method="post">
-			<p><input type="text" name="title" value="{{ .Title }}"></p>
-			{{ with .Errors.title }}
-			<p class="error">{{ . }}</p>
-			{{ end }}
-			<p><textarea name="body" cols="30" rows="10">{{ .Body }}</textarea></p>
-			{{ with .Errors.body }}
-			<p class="error">{{ . }}</p>
-			{{ end }}
-			<p><button type="submit">提交</button></p>
-		</form>
-	</body>
-	</html>
-	`
 		storeURL, _ := Router.Get("articles.store").URL()
 
 		data := ArticlesFormData{
@@ -92,7 +70,7 @@ func ArticlesStoreHandler(w http.ResponseWriter, r *http.Request) {
 			URL:    storeURL,
 			Errors: errors,
 		}
-		tmpl, err := template.New("create-form").Parse(html)
+		tmpl, err := template.ParseFiles("resources/views/articles/create.gohtml")
 		if err != nil {
 			panic(err)
 		}
@@ -106,25 +84,24 @@ func ArticlesStoreHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ArticlesCreateHandler(w http.ResponseWriter, r *http.Request) {
-	html := `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>创建文章 — 我的技术博客</title>
-</head>
-<body>
-    <form action="%s?test=data" method="post">
-        <p><input type="text" name="title"></p>
-        <p><textarea name="body" cols="30" rows="10"></textarea></p>
-        <p><button type="submit">提交</button></p>
-    </form>
-</body>
-</html>
-`
-	storeURL, _ := Router.Get("articles.store").URL()
-	fmt.Fprintf(w, html, storeURL)
-}
 
+	storeURL, _ := Router.Get("articles.store").URL()
+	data := ArticlesFormData{
+		Title:  "",
+		Body:   "",
+		URL:    storeURL,
+		Errors: nil,
+	}
+	tmpl, err := template.ParseFiles("resources/views/articles/create.gohtml")
+	if err != nil {
+		panic(err)
+	}
+
+	err = tmpl.Execute(w, data)
+	if err != nil {
+		panic(err)
+	}
+}
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "<h1>Hello, 欢迎来到 goblog</h1>")
 }
