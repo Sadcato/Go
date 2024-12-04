@@ -25,6 +25,14 @@ type Article struct {
 	ID          int64
 }
 
+func (a Article) Link() string {
+	showURL, err := router.Get("articles.show").URL("id", strconv.FormatInt(a.ID, 10))
+	if err != nil {
+		CheckError(err)
+		return ""
+	}
+	return showURL.String()
+}
 func validateArticleFormData(title string, body string) map[string]string {
 	errors := make(map[string]string)
 	// 验证标题
@@ -42,6 +50,35 @@ func validateArticleFormData(title string, body string) map[string]string {
 	}
 
 	return errors
+}
+func articlesIndexHandler(w http.ResponseWriter, r *http.Request) {
+	// 1. 执行查询语句，返回一个结果集
+	rows, err := db.Query("SELECT * from articles")
+	CheckError(err)
+	defer rows.Close()
+
+	var articles []Article
+	//2. 循环读取结果
+	for rows.Next() {
+		var article Article
+		// 2.1 扫描每一行的结果并赋值到一个 article 对象中
+		err := rows.Scan(&article.ID, &article.Title, &article.Body)
+		CheckError(err)
+		// 2.2 将 article 追加到 articles 的这个数组中
+		articles = append(articles, article)
+	}
+
+	// 2.3 检测遍历时是否发生错误
+	err = rows.Err()
+	CheckError(err)
+
+	// 3. 加载模板
+	tmpl, err := template.ParseFiles("resources/views/articles/index.gohtml")
+	CheckError(err)
+
+	// 4. 渲染模板，将所有文章的数据传输进去
+	err = tmpl.Execute(w, articles)
+	CheckError(err)
 }
 func ArticlesUpdateHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -340,7 +377,7 @@ func main() {
 	router.HandleFunc("/", pages.HomeHandler).Methods("GET").Name("home")
 	router.HandleFunc("/about", pages.AboutHandler).Methods("GET").Name("about")
 	router.HandleFunc("/articles/{id:[0-9]+}", ArticlesShowHandler).Methods("GET").Name("articles.show")
-	router.HandleFunc("/articles", pages.ArticlesIndexHandler).Methods("GET").Name("articles.index")
+	router.HandleFunc("/articles", articlesIndexHandler).Methods("GET").Name("articles.index")
 	router.HandleFunc("/articles", articlesStoreHandler).Methods("POST").Name("articles.store")
 	router.HandleFunc("/articles/create", pages.ArticlesCreateHandler).Methods("GET").Name("articles.create")
 	router.HandleFunc("/articles/{id:[0-9]+}/edit", articlesEditHandler).Methods("GET").Name("articles.edit")

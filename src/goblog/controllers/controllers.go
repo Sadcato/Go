@@ -28,10 +28,6 @@ func SetRouter(r *mux.Router) {
 	Router = r
 }
 
-func ArticlesIndexHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "访问文章列表")
-}
-
 func ArticlesCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 	storeURL, _ := Router.Get("articles.store").URL()
