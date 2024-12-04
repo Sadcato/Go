@@ -2,6 +2,7 @@ package pages
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"text/template"
@@ -11,6 +12,12 @@ import (
 
 var Router *mux.Router
 
+func CheckError(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 type ArticlesFormData struct {
 	Title, Body string
 	URL         *url.URL
@@ -19,12 +26,6 @@ type ArticlesFormData struct {
 
 func SetRouter(r *mux.Router) {
 	Router = r
-}
-
-func ArticlesShowHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id := vars["id"]
-	fmt.Fprint(w, "文章 ID"+id)
 }
 
 func ArticlesIndexHandler(w http.ResponseWriter, r *http.Request) {
