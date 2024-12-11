@@ -39,7 +39,7 @@ func validateArticleFormData(title string, body string) map[string]string {
 	if title == "" {
 		errors["title"] = "标题不能为空"
 	} else if utf8.RuneCountInString(title) < 3 || utf8.RuneCountInString(title) > 40 {
-		errors["title"] = "标题长度需介于 3-40"
+		errors["title"] = "标题长度介于 3-40"
 	}
 
 	// 验证内容
